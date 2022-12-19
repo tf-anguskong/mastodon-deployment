@@ -1,0 +1,74 @@
+---
+version: "3.8"
+services:
+  mastodon:
+    image: linuxserver/mastodon:4.0.2
+    container_name: mastodon
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - LOCAL_DOMAIN= # what you want your mastodon @handle to be
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD= # generate
+      - DB_HOST=postgres
+      - DB_USER=mastodon
+      - DB_NAME=mastodon
+      - DB_PASS= # generate
+      - DB_PORT=5432
+      - ES_ENABLED=false # Elastic Search, if you wanted full text search functionatlity
+      - SECRET_KEY_BASE= # need to generate this
+      - OTP_SECRET= # need to generate this
+      - VAPID_PRIVATE_KEY= # need to generate this
+      - VAPID_PUBLIC_KEY= # need to generate this
+      - SMTP_SERVER=smtp.office365.com # Exchange Online
+      - SMTP_PORT=587
+      - SMTP_LOGIN= # email address
+      - SMTP_PASSWORD= # email password
+      - SMTP_FROM_ADDRESS= # same as email unless you want to send as someone else
+      - SMTP_ENABLE_STARTTLS_AUTO=true
+      - SMTP_AUTH_METHOD=login
+      - SMTP_OPENSSL_VERIFY_MODE=none
+      - SMTP_DELIVERY_METHOD=smtp
+      - SMTP_DOMAIN= # email domain
+      - WEB_DOMAIN= #optional
+      - ES_HOST=es #optional
+      - ES_PORT=9200 #optional
+      - ES_USER=elastic #optional
+      - ES_PASS=elastic #optional
+      - S3_ENABLED=false # optional 
+      - S3_BUCKET= # s3 bucket name
+      - S3_ENDPOINT=https://s3.wasabisys.com/ #optional
+      - S3_PROTOCOL=https # optional
+      - S3_REGION=us-west-1 # optional
+      - AWS_ACCESS_KEY_ID=  #optional
+      - AWS_SECRET_ACCESS_KEY= #optional
+      - S3_ALIAS_HOST= #optional
+    volumes:
+      - ./config:/config
+    ports:
+      - 80:80
+      - 443:443
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER= # match above
+      - POSTGRES_PASSWORD= # match above
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./db:/var/lib/postgresql/data
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - '6379:6379'
+    command: /bin/sh -c "redis-server --requirepass <password>" # match redis password above
+    volumes: 
+      - ./redis:/data
