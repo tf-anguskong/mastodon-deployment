@@ -97,7 +97,7 @@
             "value": "mastodon"
         },
         "virtualMachineRG": {
-            "value": "mastodon-group-test"
+            "value": "mastodon-group"
         },
         "osDiskType": {
             "value": "StandardSSD_LRS"
